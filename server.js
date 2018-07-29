@@ -1,3 +1,7 @@
+/*
+Author: Corey Valentyne
+*/
+
 const express = require('express');
 const path = require('path');
 
