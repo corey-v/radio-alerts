@@ -3,7 +3,10 @@ Full stack javascript text alert service for radio song
 
 This project scans online radio api endpoints for udpated song information, if the song title matches a target song then a text message is sent notifying me which song is playing and which radio station to find it on.
 
-# Main Running Process
+## Live Demo Front End
+[Live Demo](https://radio-text-alerts.herokuapp.com/) - Clicking this link re-awakens the heroku server for 30 mins
+
+## Main Running Process
 
 -Node-cron schedules axios every 2 seconds
 
@@ -13,7 +16,7 @@ This project scans online radio api endpoints for udpated song information, if t
 
 -If the current song playing on any station matches (as of this writing) any of the Billboard Top 40 songs then Twilio sends a text message out to my phone
 
-# To Do
+## To Do
 
 -Save stats to a database for later data visualization
 
@@ -22,3 +25,6 @@ This project scans online radio api endpoints for udpated song information, if t
 -Implement a better duplicate text check
 
 -Implement a currently playing front end that pulls from MongoDB
+
+## Unrelated Event Managing App Demo
+[Event App](https://shrouded-hollows-79404.herokuapp.com)
