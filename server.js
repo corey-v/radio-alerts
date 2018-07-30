@@ -64,10 +64,14 @@ cron.schedule("*/5 * * * *", () => {
  ********************************/
 
 //Convert song title to title case and remove any backslashes
-function convertToTitleCase(song) {
+function convertToTitleCase(song) { 
+  if (song.indexOf("(") != -1) {
+    //Find position of bracket and slice
+    song = song.substring(0, song.indexOf("(") - 1)
+  }
   return song.toLowerCase().split(' ').map(function (word) {
     return (word.charAt(0).toUpperCase() + word.slice(1));
-  }).join(' ').replace("'", "");
+  }).join(' ').replace("'", "")
 }
 
 //Remove extra song title data such as "featuring ..." and returns the string
