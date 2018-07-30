@@ -26,36 +26,36 @@ app.use('/api', apiRouter)
 let matchedSongs = [];
 
 //Every 2 seconds request updated data from all stations
-cron.schedule('*/2 * * * * *', ()=>{
+cron.schedule('*/2 * * * * *', () => {
 
-  stations.forEach((station)=>{
-    
-    axios.get(station.URL, { headers: {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" }})
-    .then(res=>{
+  stations.forEach((station) => {
 
-      //Extract the song title and artist from response data
-      let stationData = getArtistAndTitle(station.Type, res)
-      console.log(stationData)
+    axios.get(station.URL, { headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" } })
+      .then(res => {
 
-      //Check to see if the song currently playing matches a song to look for and if it hasn't been seen in the past 5 minutes
-      if(songsToLookFor.includes(stationData[1]) && !matchedSongs.includes(stationData[1])){
-        console.log(`A match was found! ${stationData[1]} on ${station.Name}`)
-        
-        //Adds found song to matched list so it doesn't get picked up again on next cron
-        matchedSongs.push(stationData[1])
+        //Extract the song title and artist from response data
+        let stationData = getArtistAndTitle(station.Type, res)
+        console.log(stationData)
 
-        //Send text alert of song found on which station
-        sendText(stationData[1], station.Name)
-      }
-      
-    }).catch(err=>{
-      console.log(err)
-    })
+        //Check to see if the song currently playing matches a song to look for and if it hasn't been seen in the past 5 minutes
+        if (songsToLookFor.includes(stationData[1]) && !matchedSongs.includes(stationData[1])) {
+          console.log(`A match was found! ${stationData[1]} on ${station.Name}`)
+
+          //Adds found song to matched list so it doesn't get picked up again on next cron
+          matchedSongs.push(stationData[1])
+
+          //Send text alert of song found on which station
+          sendText(stationData[1], station.Name)
+        }
+
+      }).catch(err => {
+        console.log(err)
+      })
   })
-  
+
 })
 
-cron.schedule("*/5 * * * *", ()=>{
+cron.schedule("*/5 * * * *", () => {
   matchedSongs = [];
 })
 
@@ -64,9 +64,9 @@ cron.schedule("*/5 * * * *", ()=>{
  ********************************/
 
 //Convert song title to title case and remove any backslashes
-function convertToTitleCase(song){
-  return song.toLowerCase().split(' ').map(function(word) {
-      return (word.charAt(0).toUpperCase() + word.slice(1));
+function convertToTitleCase(song) {
+  return song.toLowerCase().split(' ').map(function (word) {
+    return (word.charAt(0).toUpperCase() + word.slice(1));
   }).join(' ').replace("'", "");
 }
 
@@ -77,11 +77,11 @@ function convertToTitleCase(song){
  * @param {JSON} res The response data from the station
  * @return {Array} An array of artist and title
  */
-function getArtistAndTitle(stationType, res){
+function getArtistAndTitle(stationType, res) {
   let artist = "";
   let title = "";
   //Depending on the station it will have different processing requirements
-  switch(stationType){
+  switch (stationType) {
     case 1:
       artist = res.data.artist
       title = res.data.title
@@ -108,13 +108,13 @@ function getArtistAndTitle(stationType, res){
  * @param {String} song The song name you want to send
  * @param {String} station The name of the radio station it came from
  */
-function sendText(song, station){
+function sendText(song, station) {
   client.messages.create({
-      body: `${song} was found on ${station}`,
-      to: config.to,  // Text this number
-      from: config.from // From a valid Twilio number
-    })
-  .then((message) => console.log(message.sid));
+    body: `${song} was found on ${station}`,
+    to: config.to,  // Text this number
+    from: config.from // From a valid Twilio number
+  })
+    .then((message) => console.log(message.sid));
 }
 
 if (process.env.NODE_ENV === 'production') {
@@ -122,7 +122,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'client/build')));
 
   // Handle React routing, return all requests to React app
-  app.get('*', function(req, res) {
+  app.get('*', function (req, res) {
     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
   });
 }
