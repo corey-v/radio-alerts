@@ -23,6 +23,7 @@ app.use('/api', apiRouter)
 /******************************
  * Radio Scanning & Text Messaging 
  * *****************************/
+let matchedSongs = [];
 
 //Every 2 seconds request updated data from all stations
 cron.schedule('*/2 * * * * *', ()=>{
@@ -35,14 +36,18 @@ cron.schedule('*/2 * * * * *', ()=>{
       //Extract the song title and artist from response data
       let stationData = getArtistAndTitle(station.Type, res)
       console.log(stationData)
-      //Check to see if the song currently playing matches
-      songsToLookFor.forEach((song)=>{
-        if(song == stationData[1]){
-          //Send a text notification of the song and station
-          console.log(`A match was found! ${song} on ${station.Name}`)
-          sendText(stationData[1], station.Name)
-        } 
-      })
+
+      //Check to see if the song currently playing matches a song to look for and if it hasn't been seen in the past 5 minutes
+      if(songsToLookFor.includes(stationData[1]) && !matchedSongs.includes(stationData[1])){
+        console.log(`A match was found! ${stationData[1]} on ${station.Name}`)
+        
+        //Adds found song to matched list so it doesn't get picked up again on next cron
+        matchedSongs.push(stationData[1])
+
+        //Send text alert of song found on which station
+        sendText(stationData[1], station.Name)
+      }
+      
     }).catch(err=>{
       console.log(err)
     })
@@ -50,6 +55,9 @@ cron.schedule('*/2 * * * * *', ()=>{
   
 })
 
+cron.schedule("*/5 * * * *", ()=>{
+  matchedSongs = [];
+})
 
 /********************************
  * Functions
