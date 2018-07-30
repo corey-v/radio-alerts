@@ -19,4 +19,6 @@ This project scans online radio api endpoints for udpated song information, if t
 
 -Modularize driver functions
 
+-Implement a better duplicate text check
 
+-Implement a currently playing front end that pulls from MongoDB
