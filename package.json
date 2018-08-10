@@ -1,5 +1,5 @@
 {
-  "name": "example-create-react-app-express",
+  "name": "radio-text-alerts",
   "version": "1.0.0",
   "scripts": {
     "client": "cd client && yarn start",
@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
     "express": "^4.16.2",
+    "mongojs": "^2.6.0",
     "node-cron": "^1.2.1",
     "twilio": "^3.18.0"
   },

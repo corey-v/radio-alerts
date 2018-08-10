@@ -9,6 +9,9 @@ const twilio = require('twilio')
 const axios = require('axios')
 const cron = require('node-cron')
 
+const mongojs = require('mongojs')
+const db = mongojs(config.database, ['currentlyPlaying'])
+
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -16,6 +19,7 @@ const client = new twilio(config.accountSid, config.authToken)
 
 const stations = require('./config/stations')
 const songsToLookFor = require('./top40songs')
+const helperFunctions = require('./helperFunctions');
 
 // API calls
 app.use('/api', apiRouter)
@@ -25,17 +29,32 @@ app.use('/api', apiRouter)
  * *****************************/
 let matchedSongs = [];
 
-//Every 2 seconds request updated data from all stations
-cron.schedule('*/2 * * * * *', () => {
+//Every 5 seconds request updated data from all stations
+cron.schedule('*/5 * * * * *', () => {
 
   stations.forEach((station) => {
 
     axios.get(station.URL, { headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" } })
       .then(res => {
 
-        //Extract the song title and artist from response data
-        let stationData = getArtistAndTitle(station.Type, res)
-        console.log(stationData)
+        //Extract the artist and song title from response data
+        let stationData = helperFunctions.getArtistAndTitle(station.Type, res)
+        console.log(stationData, station.Name)
+
+        //Update the station's current artist and song title
+        station.currentArtist = stationData[0]
+        station.currentSong = stationData[1]
+
+        //Update currently playing song in database
+        db.currentlyPlaying.update({Name: station.Name},
+          station, {}, function(err, data){
+            if(err){
+              console.log(err)
+            }
+            /*else{
+              console.log(data)
+            }*/
+          })
 
         //Check to see if the song currently playing matches a song to look for and if it hasn't been seen in the past 5 minutes
         if (songsToLookFor.includes(stationData[1]) && !matchedSongs.includes(stationData[1])) {
@@ -55,57 +74,10 @@ cron.schedule('*/2 * * * * *', () => {
 
 })
 
+//Clear the matched songs every 5th minute
 cron.schedule("*/5 * * * *", () => {
   matchedSongs = [];
-})
-
-/********************************
- * Functions
- ********************************/
-
-//Convert song title to title case and remove any backslashes
-function convertToTitleCase(song) { 
-  if (song.indexOf("(") != -1) {
-    //Find position of bracket and slice
-    song = song.substring(0, song.indexOf("(") - 1)
-  }
-  return song.toLowerCase().split(' ').map(function (word) {
-    return (word.charAt(0).toUpperCase() + word.slice(1));
-  }).join(' ').replace("'", "")
-}
-
-//Remove extra song title data such as "featuring ..." and returns the string
-
-/**
- * @param {Number} stationType Type of radio station
- * @param {JSON} res The response data from the station
- * @return {Array} An array of artist and title
- */
-function getArtistAndTitle(stationType, res) {
-  let artist = "";
-  let title = "";
-  //Depending on the station it will have different processing requirements
-  switch (stationType) {
-    case 1:
-      artist = res.data.artist
-      title = res.data.title
-      break
-    case 2:
-      artist = res.data.artist
-      title = res.data.song_title
-      break
-    case 3:
-      artist = res.data[9].TPE1
-      title = res.data[9].TIT2
-      break
-    case 4:
-      let myData = JSON.parse(res.data.substring(14, res.data.length - 1))
-      artist = myData.artist_name
-      title = myData.song_name
-      break
-  }
-  return [artist, convertToTitleCase(title)]
-}
+});
 
 /**
  * 
@@ -114,11 +86,11 @@ function getArtistAndTitle(stationType, res) {
  */
 function sendText(song, station) {
   client.messages.create({
-    body: `${song} was found on ${station}`,
-    to: config.to,  // Text this number
-    from: config.from // From a valid Twilio number
+      body: `${song} was found on ${station}`,
+      to: config.to,  // Text this number
+      from: config.from // From a valid Twilio number
   })
-    .then((message) => console.log(message.sid));
+      .then((message) => console.log(message.sid));
 }
 
 if (process.env.NODE_ENV === 'production') {

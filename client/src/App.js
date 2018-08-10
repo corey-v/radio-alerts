@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import RadioStation from './components/RadioStation'
 
 class App extends Component {
   state = {
@@ -33,6 +34,7 @@ class App extends Component {
         <p className="App-intro">
           {this.state.response}
         </p>
+        <RadioStation name='JRFM' currentSong='Delicate' currentArtist='Taylor Swift' />
       </div>
     );
   }
