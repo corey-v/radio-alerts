@@ -26,5 +26,7 @@ This project scans online radio api endpoints for udpated song information, if t
 
 -Live updates with Socket.io
 
+-Add more tests for both back and front end
+
 ## Unrelated Event Managing App Demo
 [Event App](https://shrouded-hollows-79404.herokuapp.com)
