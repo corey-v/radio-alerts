@@ -1,22 +1,12 @@
 import React, { Component } from 'react';
 
 class RadioStation extends Component{
-    constructor(props){
-        super(props);
-
-        // this.state = {
-        //     name: 'a',
-        //     currentSong: 'b',
-        //     currentArtist: 'c'
-        // }
-    }
-
     render(){
         return(
             <div class='radio-station'>
-                <p>{this.props.name}</p>
-                <p>{this.props.currentSong}</p>
-                <p>{this.props.currentArtist}</p>
+                <p><b>Station:</b> {this.props.name}</p>
+                <p><b>Current Song:</b> {this.props.currentSong}</p>
+                <p><b>Current Artist:</b> {this.props.currentArtist}</p>
             </div>
         )
     }

@@ -26,3 +26,12 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.radio-station{
+  border: 1px solid black;
+  border-radius: 3px;
+  background-color: lightblue;
+  max-width: 25%;
+  display: block;
+  margin: auto;
+}

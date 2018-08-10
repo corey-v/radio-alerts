@@ -29,8 +29,8 @@ app.use('/api', apiRouter)
  * *****************************/
 let matchedSongs = [];
 
-//Every 5 seconds request updated data from all stations
-cron.schedule('*/5 * * * * *', () => {
+//Every second request updated data from all stations
+cron.schedule('* * * * * *', () => {
 
   stations.forEach((station) => {
 
@@ -64,7 +64,7 @@ cron.schedule('*/5 * * * * *', () => {
           matchedSongs.push(stationData[1])
 
           //Send text alert of song found on which station
-          sendText(stationData[1], station.Name)
+          //sendText(stationData[1], station.Name)
         }
 
       }).catch(err => {
