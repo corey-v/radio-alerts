@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import bane from './bane-rotate.jpg';
 import './App.css';
 import RadioStation from './components/RadioStation'
 
@@ -37,7 +37,7 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+          <img src={bane} className="App-logo" alt="logo" />
           <h1 className="App-title">Now Playing</h1>
         </header>
         <p className="App-intro">

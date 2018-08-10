@@ -64,7 +64,7 @@ cron.schedule('* * * * * *', () => {
           matchedSongs.push(stationData[1])
 
           //Send text alert of song found on which station
-          //sendText(stationData[1], station.Name)
+          sendText(stationData[1], station.Name)
         }
 
       }).catch(err => {
